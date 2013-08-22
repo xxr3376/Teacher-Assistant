@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<h1> {{klass.name}}记分册 </h1>
+<!-- 需要考虑色盲问题 -->
+<style>
+    td.submitted {
+        background-color: #dff0d8;
+    }
+    td.unsubmitted {
+        background-color: #f2dede;
+    }
+    .hover td.submitted {
+        background-color: hsl(103, 44%, 80%);
+    }
+    .hover td.unsubmitted {
+        background-color: hsl(0, 43%, 82%);
+    }
+    .hover { background-color: #EEE !important; }
+    th[href]:hover {
+        text-decoration: underline;
+        background-color: #EEE;
+    }
+</style>
+<div class="row">
+    <table class="table table-bordered table-condensed">
+        <colgroup></colgroup>
+        {% for homework in homeworks %}
+        <colgroup></colgroup>
+        {% endfor %}
+        <thead>
+            <tr>
+                <th> 作业</th>
+                {% for homework in homeworks %}
+                <th href="{{url_for('viewHomework', homeworkId=homework.id)}}">{{homework.name}}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <th> {{student.name}} </th>
+                {% for homework in homeworks %}
+                {% if records.get((homework.id, student.id), 0) %}
+                <td class="submitted"></td>
+                {% else %}
+                <td class="unsubmitted"></td>
+                {% endif %}
+                {% endfor %}
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    $(function() {
+        $("th[href]").on('click', function(e) {
+            document.location.href=this.getAttribute('href');
+        }).css('cursor', 'pointer');
+        $("table").delegate('td','mouseover mouseleave', function(e) {
+            if (e.type == 'mouseover') {
+                $(this).parent().addClass("hover");
+                $("colgroup").eq($(this).index()).addClass("hover");
+            }
+            else {
+                $(this).parent().removeClass("hover");
+                $("colgroup").eq($(this).index()).removeClass("hover");
+            }
+        });
+    });
+</script>
+{% endblock %}

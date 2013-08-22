@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1> {{klass.name}} </h1>
+<a href="{{url_for('addStudent', classId=klass.id)}}">添加学生</a>
+<a href="{{url_for('addHomework', classId=klass.id)}}">添加作业</a>
+<a href="{{url_for('markbook', classId=klass.id)}}"> 记分册 </a>
+<div class="row">
+    <div class="span4 offset1">
+        {% if homeworks %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>作业名称</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for homework in homeworks %}
+                <tr>
+                    <td> <a href="{{url_for('viewHomework', homeworkId=homework.id)}}"> {{homework.name}} </a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    <div class="span4">
+        {% if students %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>学生</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{student.name}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

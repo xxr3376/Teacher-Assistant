@@ -1,0 +1,37 @@
+{% extends "bootstrap_responsive.html" %}
+{% block body_content %}
+	<div class="navbar navbar-fixed-top navbar-inverse">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="{{url_for('index')}}">Teacher Assistant</a>
+                <ul class="nav">
+                    <li class="active"><a href="{{url_for('index')}}">首页</a></li>
+                    <li ><a href="#">其他</a></li>
+                </ul>
+                <ul class="nav pull-right">
+                        {% if g.user and g.user.is_authenticated() %}
+                            <li><a href="{{url_for('user')}}">{{g.user.username}}</a></li>
+                            <li><a href="{{url_for('logout')}}">退出登录</a></li>
+                        {% else %}
+                            <li><a href="{{url_for('login')}}"> 登陆 </a> </li>
+                            <li><a href="{{url_for('register')}}"> 注册 </a> </li>
+                        {% endif %}
+                </ul>
+            </div>
+        </div>
+	</div>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul>
+				{% for message in messages %}
+				<li>{{ message }} </li>
+				{% endfor %}
+			</ul>
+			<hr>
+		{% endif %}
+	{% endwith %}
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+{% endblock %}

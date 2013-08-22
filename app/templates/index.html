@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="row">
+        <a class="pull-right" href="{{url_for('newClass')}}"> 创建新班级 </a>
+
+        {% if klasses %}
+            <div class="span6">
+                {% for klass in klasses %}
+                    <a class="btn btn-primary btn-large" href="{{url_for('viewClass', classId=klass.id)}}"><b>{{klass.name}}</b></a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div>
+                还没创建班级？ <a href="{{url_for('newClass')}}"> 创建新班级 </a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

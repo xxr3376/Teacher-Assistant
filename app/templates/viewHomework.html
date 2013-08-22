@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.student[state="0"] td:nth-child(3) {
+	color: red;
+}
+.student[state="1"] td:nth-child(3) {
+	color: green;
+}
+</style>
+<h1> {{homework.name}} </h1>
+<div class="row">
+	<div class="span3 offset1">
+		<div class="alert">
+			<div id="notification"></div>
+		</div>
+		请输入学生ID
+		<input id="scanner" type="text" />
+	</div>
+	<div class="span5">
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<td>#</td>
+					<td>姓名</td>
+					<td>状态</td>
+				</tr>
+			
+			</thead>
+			<tbody>
+				{% for student in students %}
+				<tr class="student" data-args="{{student.id}}" state="{{records.get(student.id, 0)}}">
+					<td>{{student.barcode()}}</td>
+					<td>{{student.name}}</td>
+					<td></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+<script>
+	$(function(){
+		var studentList = [{% for student in students %}"{{student.barcode()}}",{% endfor %}];
+		var miniLength = 10;
+		function updateState(dom) {
+			var state = dom.getAttribute('state');
+			var dict = { '0' : '未交', '1' : "已交" };
+			dom.children[2].innerText = dict[state];
+			var dom = $(dom);
+			dom.removeClass('success').removeClass('error');
+			if (state == 0) {
+				dom.addClass('error');
+			}
+			else {
+				dom.addClass('success');
+			}
+		}
+		$('.student').each(function(){updateState(this);});
+		var submit_link = '{{url_for("finishHomework", homeworkId=homework.id, studentId="sID", targetState="tState")}}'
+		var submit = function(studentId, state, callback) {
+			var link = submit_link.replace("sID", studentId);
+			link = link.replace("tState", state);
+			$.getJSON(link, function(data){
+				callback(data['state']);
+			});
+		};
+		$('.student').on('click', function(e) {
+			var dom = this;
+			var state = dom.getAttribute('state');
+			var studentId = dom.getAttribute('data-args');
+			submit(studentId, 1 - state, function(currentState) {
+				dom.setAttribute('state', currentState);
+				updateState(dom);
+			});
+
+		});
+		var scanner = $('#scanner')
+		var notification = $('#notification')
+		scanner.on('keypress', function(e) {
+			var key = e.keyCode;
+			if (key < 48 || key > 57){
+				return false;
+			}
+			var current = scanner.val() + String.fromCharCode(key);
+			if (current.length >= miniLength) {
+				var flag = false;
+				for (i in studentList) {
+					var id = studentList[i];
+					if (current == id) {
+						flag = true;
+						break;
+					}
+				}
+				var text = "";
+				if (flag) {
+					text = current + "已提交";
+					submit(current, 1, function(currentState) {
+						var striped = current.replace(/^0*/, '');
+						var dom = $('.student[data-args="' + striped + '"]')[0];
+						dom.setAttribute('state', currentState);
+						updateState(dom);
+					});
+				}
+				else {
+					text = "未找到" + current;
+				}
+				notification.text(text); 
+				//flash notification
+				scanner.val('');
+				return false;
+			}
+		});
+	});
+</script>
+
+
+{% endblock %}
+

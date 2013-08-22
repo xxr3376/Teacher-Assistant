@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1> 用户: {{user.username}} </h1>
+<h2> E-mail: {{user.email}} </h1>
+<img src="{{user.avatar(128)}}" />
+
+{% endblock %}
